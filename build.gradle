@@ -568,7 +568,7 @@ defineProperty("INCLUDE_NULL3D", "false")
 ext.IS_INCLUDE_NULL3D = Boolean.parseBoolean(INCLUDE_NULL3D)
 
 // Specifies whether to include the ES2 pipeline if available
-defineProperty("INCLUDE_ES2", IS_WINDOWS ? "false" : "true")
+defineProperty("INCLUDE_ES2", "true")
 ext.IS_INCLUDE_ES2 = Boolean.parseBoolean(INCLUDE_ES2)
 
 // Specifies whether to generate code coverage statistics when running tests
