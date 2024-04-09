@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.javafx.css.ImmutablePseudoClassSetsCache;
 import com.sun.javafx.css.PseudoClassState;
 import com.sun.javafx.css.StyleClassSet;
 
@@ -98,7 +97,6 @@ final public class SimpleSelector extends Selector {
      * styleClasses converted to a set of bit masks
      */
     private final Set<StyleClass> styleClassSet;
-    private final Set<StyleClass> unwrappedStyleClassSet;
 
     private final String id;
 
@@ -113,7 +111,6 @@ final public class SimpleSelector extends Selector {
     // a mask of bits corresponding to the pseudoclasses (immutable)
     private final Set<PseudoClass> pseudoClassState;
 
-    // for test purposes
     Set<PseudoClass> getPseudoClassStates() {
         return pseudoClassState;
     }
@@ -149,7 +146,7 @@ final public class SimpleSelector extends Selector {
         // then match needs to check name
         this.matchOnName = (name != null && !("".equals(name)) && !("*".equals(name)));
 
-        this.unwrappedStyleClassSet = new StyleClassSet();
+        Set<StyleClass> scs = new StyleClassSet();
 
         if (styleClasses != null) {
             for (int n = 0; n < styleClasses.size(); n++) {
@@ -157,11 +154,11 @@ final public class SimpleSelector extends Selector {
                 final String styleClassName = styleClasses.get(n);
                 if (styleClassName == null || styleClassName.isEmpty()) continue;
 
-                unwrappedStyleClassSet.add(StyleClassSet.getStyleClass(styleClassName));
+                scs.add(StyleClassSet.getStyleClass(styleClassName));
             }
         }
 
-        this.styleClassSet = Collections.unmodifiableSet(unwrappedStyleClassSet);
+        this.styleClassSet = Collections.unmodifiableSet(scs);
         this.matchOnStyleClass = (this.styleClassSet.size() > 0);
 
         PseudoClassState pcs = new PseudoClassState();
@@ -184,7 +181,7 @@ final public class SimpleSelector extends Selector {
             }
         }
 
-        this.pseudoClassState = ImmutablePseudoClassSetsCache.of(pcs);
+        this.pseudoClassState = Collections.unmodifiableSet(pcs);
         this.nodeOrientation = dir;
         this.id = id == null ? "" : id;
         // if id is not null and not empty, then match needs to check id
@@ -290,8 +287,7 @@ final public class SimpleSelector extends Selector {
     // This selector matches when class="pastoral blue aqua marine" but does not
     // match for class="pastoral blue".
     private boolean matchStyleClasses(StyleClassSet otherStyleClasses) {
-        // checks against unwrapped version so BitSet can do its special casing for performance
-        return otherStyleClasses.containsAll(unwrappedStyleClassSet);
+        return otherStyleClasses.containsAll(styleClassSet);
     }
 
     @Override public boolean equals(Object obj) {
